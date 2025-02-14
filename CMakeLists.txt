@@ -5,13 +5,19 @@ project(STCFG)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Boost 1.83.0 REQUIRED)
 find_package(gtirb 2.2.0 REQUIRED)
 
 add_compile_options(-Wall -Wextra -Werror -pedantic-errors)
 
-add_executable(stcfg src/main.cpp)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(-Og)
+elseif (CMAKE_BUILD_TYPE STREQUAL "Default")
+    add_compile_options(-O1)
+endif ()
 
-target_include_directories(stcfg PRIVATE include Boost::boost gtirb)
+add_executable(stcfg src/main.cpp src/Init.cpp
+    src/CFGAnalysis.cpp)
+
+target_include_directories(stcfg PRIVATE include)
 
 target_link_libraries(stcfg PRIVATE gtirb)
