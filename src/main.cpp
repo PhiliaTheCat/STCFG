@@ -18,7 +18,9 @@ int main(const int argCnt, const char *argVals[])
         const gtirb::CFG &cfg = ir.getCFG();
         const auto symbols = ir.symbols();
 
-
+        const auto &CFGresults = stcfg::analyzeCFG(cfg, symbols);
+        for (const auto &result: CFGresults)
+            std::cout << result << std::endl;
 
         return 0;
     }
