@@ -8,7 +8,7 @@ namespace stcfg
     class Result
     {
     public:
-        virtual ~Result() = 0;
+        virtual ~Result() = default;
 
     private:
         virtual void print(std::ostream &out) const = 0;

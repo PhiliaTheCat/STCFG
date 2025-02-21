@@ -1,12 +1,11 @@
 #ifndef __INCLUDED_CFG_ANALYSIS__
 #define __INCLUDED_CFG_ANALYSIS__
 
+#include <utility>
 #include <vector>
 #include <ostream>
 
-#include <gtirb/CFG.hpp>
 #include <gtirb/IR.hpp>
-#include <gtirb/Symbol.hpp>
 
 #include "Result.hpp"
 
@@ -16,27 +15,69 @@ namespace stcfg
         public Result
     {
     private:
-        char *name;
+        const void *addr;
         size_t refTimes;
-        void *addr;
+        char *reason;
 
     public:
-        CFGAnalysisResult(const char mname[], const size_t mrefTimes, void *maddr) noexcept(false)
-        : name(new char [strlen(mname) + 1] {}),
-        refTimes(mrefTimes), addr(maddr) { strcpy(name, mname); }
+        CFGAnalysisResult(const void *maddr, const size_t mrefTimes, const char mreason[]) noexcept(false)
+        : addr(maddr), refTimes(mrefTimes)
+        {
+            if (mreason == nullptr) reason = nullptr;
+            else
+            {
+                reason = new char [strlen(mreason) + 1];
+                strcpy(reason, mreason);
+            }
+        }
 
-        ~CFGAnalysisResult() override { delete [] name; }
+        CFGAnalysisResult(CFGAnalysisResult &&tar) noexcept
+        : addr(tar.addr), refTimes(tar.refTimes), reason(tar.reason) { tar.reason = nullptr; }
+
+        ~CFGAnalysisResult() override { delete [] reason; }
+
+        CFGAnalysisResult &operator =(CFGAnalysisResult &&rhs) noexcept
+        {
+            if (this == &rhs) return *this;
+
+            addr = rhs.addr;
+            refTimes = rhs.refTimes;
+            delete [] reason;
+            reason = rhs.reason;
+
+            rhs.reason = nullptr;
+            return *this;
+        }
 
     private:
         void print(std::ostream &out) const override
         {
-            out << name << "@" << addr
-                << "::" << refTimes;
+            out << addr << "::" << reason << "::" << refTimes;
         }
     };
 
-    std::vector<CFGAnalysisResult> analyzeCFG(const gtirb::CFG &cfg,
-        const boost::iterator_range<gtirb::IR::const_symbol_iterator> &symbols);
+    struct EdgeDesc
+    {
+    public:
+        const gtirb::CfgNode *from;
+        const gtirb::CfgNode *to;
+        gtirb::EdgeLabel label;
+
+    public:
+        EdgeDesc(const gtirb::CfgNode *mfrom, const gtirb::CfgNode *mto, gtirb::EdgeLabel mlabel)
+        : from(mfrom), to(mto), label(std::move(mlabel)) {}
+
+        friend std::ostream &operator <<(std::ostream &lhs, const EdgeDesc &rhs)
+        {
+            return lhs << rhs.from << " -> " << rhs.to << ": " << rhs.label;
+        }
+    };
+
+    std::vector<CFGAnalysisResult> analyzeCFG(const gtirb::IR &ir);
+
+    std::vector<EdgeDesc> getEdges(const gtirb::CFG &cfg);
+
+    void analyzeInDeg(std::vector<CFGAnalysisResult> &results, const std::vector<EdgeDesc> &edges);
 }
 
 #endif

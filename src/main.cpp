@@ -3,8 +3,6 @@
 #include <stdexcept>
 
 #include <gtirb/IR.hpp>
-#include <gtirb/CFG.hpp>
-#include <gtirb/Symbol.hpp>
 
 #include "Init.hpp"
 #include "CFGAnalysis.hpp"
@@ -15,11 +13,9 @@ int main(const int argCnt, const char *argVals[])
     try
     {
         const gtirb::IR &ir = stcfg::init(argCnt, argVals);
-        const gtirb::CFG &cfg = ir.getCFG();
-        const auto symbols = ir.symbols();
 
-        const auto &CFGresults = stcfg::analyzeCFG(cfg, symbols);
-        for (const auto &result: CFGresults)
+        const auto CFGAnalysisResults = stcfg::analyzeCFG(ir);
+        for (const auto &result: CFGAnalysisResults)
             std::cout << result << std::endl;
 
         return 0;
