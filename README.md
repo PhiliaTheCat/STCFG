@@ -40,22 +40,58 @@ sudo cmake --install .
 
 #### 1.2. Install Capstone
 
-Capstone provides various of disasseemblers for different architectures. This tool uses them to understand instructions
+Capstone provides various of disassemblers for different architectures. This tool uses them to understand instructions
 in a binary. Capstone's source tree is available at https://github.com/capstone-engine/capstone. The latest
-version till now is 5.0.5. Checkout tag 5.0.5 after cloning the source tree should be working well. Again, if you could 
+version till now is 5.0.5. Checkout tag 5.0.5 after cloning the source tree should be working well. Again, if you could
 see any later version, it should be working as well.
 
 Once you have the source code, you should be able to compile it through these lines:
 
 ```shell
 # Assume you are at the root of Capstone's source tree
-cd .. # Back to the parent dir
+cd ..
 mkdir capstone-build
 cd capstone-build
-cmake -DCMAKE_BUILD_TYPE=Release ../capstone
+cmake -DCMAKE_BUILD_TYPE=Release ../capstone # I am not sure if the default build is well-performing
 cmake --build .
 sudo cmake --install .
 ```
 
 Besides, note that Capstone is providing a CMake building script along with its source tree. You should be able to build
 using that, but I have not tested it yet.
+
+#### 1.3. Compile STCFG
+
+**CAUTIOUS: If your package manager somehow provides GTIRB and/or Capstone, you might still need an installation through
+CMake.** Existing version of Capstone on Ubuntu 24.04 does not provide the config file for CMake to locate the package,
+thus cause the build to fail.
+
+After you have installed GTIRB and Capstone, you should be able to compile this tool. You might need to manually specify
+the installation dir of GTIRB and Capstone when invoking CMake, if your installation is at a different location other
+than system path.
+
+```shell
+# Assume you are at the root of STCFG's source tree
+cd ..
+mkdir stcfg-build
+cd stcfg-build
+cmake ../STCFG # You are free to specify the build type between Debug (Og) and Release (O3),
+               # the default build enables O1
+cmake --build .
+# You should be able to see the resulting binary at the root of build dir
+```
+
+### 2. Preparation
+
+This tool uses GTIRB to generally analyze the binary, thus you need to transform the binary into format GTIRB before you
+invoke the tool. You can use another tool ddisasm at https://github.com/grammatech/ddisasm, provided by GrammaTech, to
+do the transformation. That tool does provide a docker container for you to conveniently run it. You can read its
+README.md for more instructions.
+
+### 3. Invocation
+
+If you are not sure about what to do, simply invoke the tool without any argument. There should be a help message:
+
+```shell
+./stcfg
+```
