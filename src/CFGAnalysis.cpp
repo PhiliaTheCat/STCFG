@@ -10,15 +10,14 @@ namespace stcfg
 {
     std::vector<CFGAnalysisResult> analyzeCFG(const gtirb::IR &ir)
     {
-        std::vector<CFGAnalysisResult> results;
         const gtirb::CFG &cfg = ir.getCFG();
         std::vector<EdgeDesc> edges = getEdges(cfg);
 
         std::sort(edges.begin(), edges.end(),
             [](const EdgeDesc &a, const EdgeDesc &b) -> bool { return a.to < b.to; });
-        analyzeInDeg(results, edges);
+        std::vector<CFGAnalysisResult> inDegResults = analyzeDeg(edges, CFGAnalyzeMode::IN);
 
-        return results;
+        return inDegResults;
     }
 
     std::vector<EdgeDesc> getEdges(const gtirb::CFG &cfg)
@@ -34,8 +33,10 @@ namespace stcfg
         return edges;
     }
 
-    void analyzeInDeg(std::vector<CFGAnalysisResult> &results, const std::vector<EdgeDesc> &edges)
+    std::vector<CFGAnalysisResult> analyzeDeg(const std::vector<EdgeDesc> &edges, const CFGAnalyzeMode mode)
     {
+        std::vector<CFGAnalysisResult> results;
+
         const void *p = nullptr;
         size_t total = 0;
         size_t ret = 0;
@@ -44,7 +45,7 @@ namespace stcfg
 
         for (const auto &edge: edges)
         {
-            if (p != edge.to && p != nullptr)
+            if (p != edge.to && mode == CFGAnalyzeMode::IN && p != nullptr)
             {
                 if (total >= 5)
                 {
@@ -65,7 +66,17 @@ namespace stcfg
                 call = 0;
             }
             else if (p == nullptr)
-                p = edge.to;
+            {
+                switch (mode)
+                {
+                case CFGAnalyzeMode::IN:
+                    p = edge.to;
+                    break;
+                case CFGAnalyzeMode::OUT:
+                    p = edge.from;
+                    break;
+                }
+            }
 
             if (get<gtirb::EdgeType>(edge.label.value()) == gtirb::EdgeType::Return)
                 ++ret;
@@ -76,5 +87,7 @@ namespace stcfg
 
             ++total;
         }
+
+        return results;
     }
 }

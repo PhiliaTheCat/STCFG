@@ -20,7 +20,7 @@ namespace stcfg
         char *reason;
 
     public:
-        CFGAnalysisResult(const void *maddr, const size_t mrefTimes, const char mreason[]) noexcept(false)
+        CFGAnalysisResult(const void *const maddr, const size_t mrefTimes, const char *const mreason) noexcept(false)
         : addr(maddr), refTimes(mrefTimes)
         {
             if (mreason == nullptr) reason = nullptr;
@@ -64,7 +64,7 @@ namespace stcfg
         gtirb::EdgeLabel label;
 
     public:
-        EdgeDesc(const gtirb::CfgNode *mfrom, const gtirb::CfgNode *mto, gtirb::EdgeLabel mlabel)
+        EdgeDesc(const gtirb::CfgNode *const mfrom, const gtirb::CfgNode *const mto, gtirb::EdgeLabel mlabel)
         : from(mfrom), to(mto), label(std::move(mlabel)) {}
 
         friend std::ostream &operator <<(std::ostream &lhs, const EdgeDesc &rhs)
@@ -73,11 +73,13 @@ namespace stcfg
         }
     };
 
+    enum class CFGAnalyzeMode { IN, OUT };
+
     std::vector<CFGAnalysisResult> analyzeCFG(const gtirb::IR &ir);
 
     std::vector<EdgeDesc> getEdges(const gtirb::CFG &cfg);
 
-    void analyzeInDeg(std::vector<CFGAnalysisResult> &results, const std::vector<EdgeDesc> &edges);
+    std::vector<CFGAnalysisResult> analyzeDeg(const std::vector<EdgeDesc> &edges, CFGAnalyzeMode mode);
 }
 
 #endif
