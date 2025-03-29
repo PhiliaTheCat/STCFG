@@ -14,8 +14,8 @@ int main(const int argCnt, const char *argVals[])
     {
         const gtirb::IR &ir = stcfg::init(argCnt, argVals);
 
-        const auto CFGAnalysisResults = stcfg::analyzeCFG(ir);
-        for (const auto &result: CFGAnalysisResults)
+        const std::vector<stcfg::CFGAnalysisResult> CFGAnalysisResults = stcfg::analyzeCFG(ir);
+        for (const stcfg::Result &result: CFGAnalysisResults)
             std::cout << result << std::endl;
 
         return 0;
