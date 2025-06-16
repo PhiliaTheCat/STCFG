@@ -1,10 +1,10 @@
-#ifndef __INCLUDED_INIT__
-#define __INCLUDED_INIT__
+#pragma once
 
+#include <gtirb/gtirb.hpp>
 
 namespace stcfg
 {
-    [[nodiscard]] const gtirb::IR &init(const int &argCnt, const char *argVal[]) noexcept(false);
-}
+    [[nodiscard]] const gtirb::IR &init(const char filename[]) noexcept(false);
 
-#endif
+    [[nodiscard]] const gtirb::Section &findSectionText(const gtirb::IR &ir) noexcept(false);
+}
