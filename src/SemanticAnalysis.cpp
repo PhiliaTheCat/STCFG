@@ -64,7 +64,7 @@ void stcfg::findStarts(std::vector<FunctionInfo> &infos, const uint8_t *heap) no
             if (heap[i] == 0xfa)
             {
                 status = 0;
-                infos.emplace_back(global.textBase + i - 3);
+                infos.emplace_back(i - 3);
             }
             else
                 status = 0;
