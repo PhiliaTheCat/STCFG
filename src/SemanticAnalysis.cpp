@@ -20,7 +20,6 @@ std::vector<stcfg::FunctionInfo> stcfg::extractFunctionInfo(const gtirb::Section
     std::vector<FunctionInfo> ret;
     findStarts(ret, heap);
 
-
     delete [] heap;
 
     return ret;
