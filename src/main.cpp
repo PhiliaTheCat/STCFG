@@ -1,12 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 #include <gtirb/gtirb.hpp>
 
 #include "Init.hpp"
 #include "SemanticAnalysis.hpp"
 #include "FunctionInfo.hpp"
-#include "GlobalStatus.hpp"
+#include "CFGAnalysis.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -22,11 +23,16 @@ int main(int argc, char *argv[])
     {
         const gtirb::IR &ir = stcfg::init(argv[1]);
 
+        const gtirb::CFG &cfg = stcfg::getCFG(ir);
         const gtirb::Section &sectionText = stcfg::findSectionText(ir);
 
-        std::vector<stcfg::FunctionInfo> infos = stcfg::extractFunctionInfo(sectionText);
-        for (const auto &info: infos)
-            std::cout << info << std::endl;
+        // Already sorted by address.
+        std::vector<stcfg::FunctionInfo> funcInfos = stcfg::extractFunctionInfo(sectionText);
+        std::vector<stcfg::CFGInfo> cfgInfos = stcfg::extractCFGInfo(cfg);
+
+        std::cout << cfgInfos.size() << std::endl;
+
+        return 0;
     }
     catch (const std::runtime_error &e)
     {

@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <cstdlib>
 #include <cstdint>
 
 #include <gtirb/gtirb.hpp>
@@ -14,7 +15,7 @@ std::vector<stcfg::FunctionInfo> stcfg::extractFunctionInfo(const gtirb::Section
         throw std::runtime_error("Section \".text\" does not have a valid size!");
     global.textSize = sectionText.getSize().value();
 
-    const auto heap = new uint8_t [global.textSize];
+    const auto heap = new std::uint8_t [global.textSize];
     extractText(sectionText, heap);
 
     std::vector<FunctionInfo> ret;
@@ -25,24 +26,27 @@ std::vector<stcfg::FunctionInfo> stcfg::extractFunctionInfo(const gtirb::Section
     return ret;
 }
 
-void stcfg::extractText(const gtirb::Section &sectionText, uint8_t *heap) noexcept(false)
+void stcfg::extractText(const gtirb::Section &sectionText, std::uint8_t *heap) noexcept(false)
 {
-    size_t i = 0;
+    std::size_t i = 0;
 
     for (const auto &byteInterval: sectionText.byte_intervals())
     {
-        for (const auto byte: byteInterval.bytes<uint8_t>())
-            heap[i++] = byte;
+        const auto p = byteInterval.rawBytes<uint8_t>();
+        memcpy(heap, p, byteInterval.getSize());
+
+        heap += byteInterval.getSize();
+        i += byteInterval.getSize();
     }
 
     if (i != sectionText.getSize().value())
         throw std::runtime_error("Failed loading section \".text\"!");
 }
 
-void stcfg::findStarts(std::vector<FunctionInfo> &infos, const uint8_t *heap) noexcept(false)
+void stcfg::findStarts(std::vector<FunctionInfo> &infos, const std::uint8_t *heap) noexcept(false)
 {
     int status = 0;
-    for (size_t i = 0; i < global.textSize; ++i)
+    for (std::size_t i = 0; i < global.textSize; ++i)
     {
         switch (status)
         {

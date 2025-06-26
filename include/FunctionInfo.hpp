@@ -11,18 +11,19 @@ namespace stcfg
     struct FunctionInfo
     {
     public:
-        uint64_t start;
+        std::uint64_t start;
 
     public:
-        FunctionInfo() = default;
-
-        FunctionInfo(const uint64_t mstart)
-        : start(mstart) {}
+        FunctionInfo(std::uint64_t myStart): start(myStart) {}
 
         friend std::ostream &operator <<(std::ostream &lhs, const FunctionInfo &rhs)
         {
-            return lhs << "0x" << std::hex << std::setfill('0') << std::setw(16)
+            using namespace std;
+            lhs << "Start point: 0x"
+                << hex << setw(16) << setfill('0')
                 << rhs.start + global.textBase;
+
+            return lhs;
         }
     };
 }

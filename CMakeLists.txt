@@ -17,7 +17,8 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Default")
 endif ()
 
 add_executable(stcfg src/main.cpp src/Init.cpp
-    src/SemanticAnalysis.cpp)
+    src/SemanticAnalysis.cpp
+    src/CFGAnalysis.cpp)
 
 target_include_directories(stcfg PRIVATE include)
 
