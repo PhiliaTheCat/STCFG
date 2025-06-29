@@ -1,13 +1,12 @@
 #define GTIRB_WRAP_UTILS_IN_NAMESPACE
 
-#include <cstdint>
 #include <vector>
 #include <stdexcept>
+#include <cstdint>
 
 #include <gtirb/gtirb.hpp>
 
 #include "CFGAnalysis.hpp"
-#include "GlobalStatus.hpp"
 
 [[nodiscard]] std::vector<stcfg::CFGInfo> stcfg::extractCFGInfo(const gtirb::CFG &cfg) noexcept(false)
 {
