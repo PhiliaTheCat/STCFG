@@ -7,6 +7,7 @@
 #include <gtirb/gtirb.hpp>
 
 #include "CFGAnalysis.hpp"
+#include "GlobalStatus.hpp"
 
 [[nodiscard]] std::vector<stcfg::CFGInfo> stcfg::extractCFGInfo(const gtirb::CFG &cfg) noexcept(false)
 {
@@ -33,7 +34,7 @@
                 throw std::runtime_error("Existing codeblock without a valid address!");
             auto to = static_cast<std::uint64_t>(t2.value());
 
-            result.emplace_back(from, to, label);
+            result.emplace_back(from - global.textBase, to - global.textBase, label);
         }
     }
 
