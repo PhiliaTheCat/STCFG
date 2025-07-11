@@ -1,12 +1,17 @@
-#include <vector>
-#include <iostream>
-#include <cstdlib>
 #include <cstdint>
+
+#include <vector>
+
+#include <iostream>
+
+#include <stdexcept>
 
 #include <gtirb/gtirb.hpp>
 
 #include "SemanticAnalysis.hpp"
+
 #include "FunctionInfo.hpp"
+
 #include "GlobalStatus.hpp"
 
 std::vector<stcfg::FunctionInfo> stcfg::extractFunctionInfo(const gtirb::Section &sectionText) noexcept(false)

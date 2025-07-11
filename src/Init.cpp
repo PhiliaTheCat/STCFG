@@ -1,4 +1,9 @@
+#include <cstdint>
+
 #include <fstream>
+
+#include <string>
+
 #include <stdexcept>
 
 #include <gtirb/gtirb.hpp>
@@ -38,7 +43,7 @@ const gtirb::Section &stcfg::findSectionText(const gtirb::IR &ir) noexcept(false
 
     if (!ret->getAddress().has_value())
         throw std::runtime_error("Invalid address of section \".text\"!");
-    global.textBase = static_cast<uint64_t>(ret->getAddress().value());
+    global.textBase = static_cast<std::uint64_t>(ret->getAddress().value());
 
     return *ret;
 }

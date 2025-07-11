@@ -1,13 +1,17 @@
 #include <iostream>
+
 #include <vector>
+
 #include <stdexcept>
 
 #include <gtirb/gtirb.hpp>
 
 #include "Init.hpp"
+
 #include "SemanticAnalysis.hpp"
-#include "FunctionInfo.hpp"
 #include "CFGAnalysis.hpp"
+
+#include "FunctionInfo.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -29,8 +33,6 @@ int main(int argc, char *argv[])
         // Already sorted by address.
         std::vector<stcfg::FunctionInfo> funcInfos = stcfg::extractFunctionInfo(sectionText);
         std::vector<stcfg::CFGInfo> cfgInfos = stcfg::extractCFGInfo(cfg);
-
-        std::cout << cfgInfos.size() << std::endl;
 
         return 0;
     }

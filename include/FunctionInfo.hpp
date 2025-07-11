@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cstdint>
+
 #include <ostream>
-#include <iomanip>
 
 #include "GlobalStatus.hpp"
 

@@ -1,42 +1,45 @@
 #define GTIRB_WRAP_UTILS_IN_NAMESPACE
 
-#include <vector>
-#include <stdexcept>
 #include <cstdint>
+
+#include <vector>
+
+#include <stdexcept>
 
 #include <gtirb/gtirb.hpp>
 
-#include "CFGAnalysis.hpp"
 #include "GlobalStatus.hpp"
 
-[[nodiscard]] std::vector<stcfg::CFGInfo> stcfg::extractCFGInfo(const gtirb::CFG &cfg) noexcept(false)
+#include "CFGAnalysis.hpp"
+
+namespace stcfg
 {
-    std::vector<CFGInfo> result;
-
-    for (const auto &codeBlock: blocks(cfg))
+    [[nodiscard]] std::vector<CFGInfo> extractCFGInfo(const gtirb::CFG &cfg) noexcept(false)
     {
-        const auto &t1 = codeBlock.getAddress();
-        if (!t1.has_value())
-            throw std::runtime_error("Existing codeblock without a valid address!");
-        auto from = static_cast<std::uint64_t>(t1.value());
+        std::vector<CFGInfo> result;
 
-        for (const auto &pair: cfgSuccessors(cfg, &codeBlock))
+        for (const auto &codeBlock: blocks(cfg))
         {
-            const auto target = pair.first;
-            const auto &label = pair.second;
-
-            const auto actual = gtirb::dyn_cast<const gtirb::CodeBlock>(target);
-            if (actual == nullptr)
-                continue;
-
-            const auto &t2 = actual->getAddress();
-            if (!t2.has_value())
+            const auto &t1 = codeBlock.getAddress();
+            if (!t1.has_value())
                 throw std::runtime_error("Existing codeblock without a valid address!");
-            auto to = static_cast<std::uint64_t>(t2.value());
+            const auto from = static_cast<std::uint64_t>(t1.value());
 
-            result.emplace_back(from - global.textBase, to - global.textBase, label);
+            for (const auto &[target, label]: cfgSuccessors(cfg, &codeBlock))
+            {
+                const auto actual = gtirb::dyn_cast<const gtirb::CodeBlock>(target);
+                if (actual == nullptr)
+                    continue;
+
+                const auto &t2 = actual->getAddress();
+                if (!t2.has_value())
+                    throw std::runtime_error("Existing codeblock without a valid address!");
+                const auto to = static_cast<std::uint64_t>(t2.value());
+
+                result.emplace_back(from - global.textBase, to - global.textBase, label);
+            }
         }
-    }
 
-    return result;
+        return result;
+    }
 }
